@@ -25,7 +25,7 @@ _*Write a piece of software that can take log files, parse them, and put them in
 
 If you wish, you can focus on making a fast, parallelized log parser, or build statistical analysis or something else that you find interesting.
 
-Log files can be found in the _samples_ folder.
+There are some decent sample Apache data available from NASA here: http://ita.ee.lbl.gov/html/contrib/NASA-HTTP.html
 
 *Requirements*
 * Stack should include PHP/Symfony, Ruby, Python or Go  - your choice.
