@@ -6,10 +6,10 @@ When it comes to bringing a new developer on board, it is important to ensure th
 
 Expectations
 ------------
-The first is the practice of developing software: How you handle yourself in a terminal, using software versioning systems, IDEs of preference, working in agile teams, meeting deadlines, keeping updated on current developments within the field etc. 
+The first aspect is the _practice_ of developing software: How you handle yourself in a terminal, using software versioning systems, IDEs of preference, working in agile teams, meeting deadlines, keeping updated on current developments within the field etc. 
 This is the stuff that keeps the wheels turning, and it’s just about as important to us as programming skills.
 
-Which brings us to the second aspect, namely technical competence: Experience, knowledge and awareness of best practices on relevant development stacks. Languages, algorithms, paradigms and patterns. System architecture, frameworks, entity-relation-diagramming, database design. Security. Community participation and contributions to Open Source projects.
+Which brings us to the second aspect, namely _technical competence_: Experience, knowledge and awareness of best practices on relevant development stacks. Languages, algorithms, paradigms and patterns. System architecture, frameworks, entity-relation-diagramming, database design. Security. Community participation and contributions to Open Source projects.
 
 The interview assignment
 ------------------------
