@@ -21,9 +21,11 @@ Think about: What you want to talk about when we do the interview. It doesn’t 
 
 With that in mind, to the task:
 
-_*Write a piece of software that can take log files, parse them, and put them in a normalized database, so that they can be used for statistical analysis*_
+_*Write a piece of software that can take large Apache log files, parse them, and put them in a normalized database, so that they can be used for statistical analysis*_
 
-If you wish, you can focus on making a fast, parallelized log parser, or build statistical analysis or something else that you find interesting.
+We are interested in aggregating traffic per client IP/host, in bucket intervals of one day.
+
+If you wish, you can focus on making a fast, parallelized log parser, or build statistical analysis or something else that you find interesting. Feel free to impress.
 
 There are some decent sample Apache data available from NASA here: http://ita.ee.lbl.gov/html/contrib/NASA-HTTP.html
 
