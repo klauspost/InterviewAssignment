@@ -24,6 +24,8 @@ var (
 	format        = flag.String("format", `$remote_addr - - [$time_local] "$request" $status $size`, "Log format")
 	timeFormat    = flag.String("timeformat", `02/Jan/2006:15:04:05 -0700`, "Time format in Go time.Parse format.")
 	continueError = flag.Bool("e", false, "continnue to next file if an error occurs")
+	elasticHost   = flag.String("elastic", "http://127.0.0.1:9200", "url to elasticseach server (http)")
+	clean         = flag.Bool("clean", false, "clean the index before adding content")
 )
 
 // Local variables
@@ -46,8 +48,20 @@ func main() {
 	if len(args) == 0 {
 		usage()
 	}
+	// Create an elasticsearch storer.
+	store, err := traffic.NewElastic(*elasticHost, "requests")
+	failOnErr(err)
+
+	// Be sure we close the store
+	defer store.Close()
+
+	if *clean {
+		err := store.RemoveAll()
+		failOnErr(err)
+	}
+
 	for _, file := range args {
-		err := importFile(file)
+		err := importFile(file, store)
 		if err != nil {
 			report(file, err)
 		}
@@ -55,12 +69,21 @@ func main() {
 	os.Exit(exitCode)
 }
 
+// Report an error and always fail
+func failOnErr(err error) {
+	if err == nil {
+		return
+	}
+	report("", err)
+	os.Exit(2)
+}
+
 // Report an error, and exit depending on the 'continueError'
 func report(file string, err error) {
 	if file == "" {
-		fmt.Fprint(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, err)
 	} else {
-		fmt.Fprint(os.Stderr, file+": "+err.Error())
+		fmt.Fprintln(os.Stderr, file+": "+err.Error())
 	}
 	// Exit now
 	if !*continueError {
@@ -72,7 +95,7 @@ func report(file string, err error) {
 
 // importFile will Import a single file.
 // The file is assumed to be gzipped.
-func importFile(file string) error {
+func importFile(file string, store traffic.RequestStore) error {
 	fi, err := os.Open(file)
 	if err != nil {
 		return err
@@ -100,8 +123,16 @@ func importFile(file string) error {
 		if err != nil {
 			return err
 		}
-		_ = req
+		req.GenerateHash()
+		err = store.Store(*req)
+		if err != nil {
+			return err
+		}
 		n++
+		if n%1000 == 0 {
+			elapsed := time.Since(start)
+			fmt.Printf("Processed %d, %0.2f entries/sec.\n", n, float64(n)/elapsed.Seconds())
+		}
 	}
 	elapsed := time.Since(start)
 	fmt.Printf("Processing %q took %s, processing %d entries.\n", file, elapsed, n)
