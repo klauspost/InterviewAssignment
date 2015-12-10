@@ -94,11 +94,6 @@ func (e elasticStore) createTemplate() error {
 			"number_of_shards": 1,
 		},
 		"mappings": map[string]interface{}{
-/*			"_default_": map[string]interface{}{
-				"_all": map[string]interface{}{
-					"enabled": false,
-				},
-			},*/
 			"request": map[string]interface{}{
 				"properties": map[string]interface{}{
 					"time": map[string]interface{}{
@@ -122,6 +117,25 @@ func (e elasticStore) createTemplate() error {
 					"protocol": map[string]interface{}{
 						"type":  "string",
 						"index": "not_analyzed",
+					},
+					"country": map[string]interface{}{
+						"type":  "string",
+						"index": "not_analyzed",
+					},
+					"city": map[string]interface{}{
+						"type":  "string",
+						"index": "not_analyzed",
+					},
+					"timezone": map[string]interface{}{
+						"type":  "string",
+						"index": "not_analyzed",
+					},
+					"location": map[string]interface{}{
+						"type": "geo_point",
+						"fielddata": map[string]interface{}{
+							"format":    "compressed",
+							"precision": "1km",
+						},
 					},
 				},
 			},

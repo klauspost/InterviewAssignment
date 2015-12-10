@@ -4,8 +4,15 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
+	"net"
 	"time"
+
+	"github.com/oschwald/geoip2-golang"
+	"gopkg.in/olivere/elastic.v3"
 )
+
+// Initialize to look up geolocation for raw IP addresses
+var GeoDB *geoip2.Reader
 
 // Request represents a single server request.
 type Request struct {
@@ -19,8 +26,11 @@ type Request struct {
 	Payload    int       `json:"payload_size"` // The size of the returned body in bytes
 
 	// Enriched fields:
-	RemoteIP string `json:"remote_ip,omitempty"` // IP of the requester
-
+	RemoteIP string             `json:"remote_ip,omitempty"` // IP of the requester
+	Country  string             `json:"country,omitempty"`
+	City     string             `json:"city,omitempty"`
+	Timezone string             `json:"timezone,omitempty"`
+	Location map[string]float64 `json:"location,omitempty"`
 }
 
 // GenerateHash will generate a unique hash for a request
@@ -48,8 +58,25 @@ func (r *Request) GenerateHash() {
 }
 
 // Enrich the Request data.
+// If GeoDB has been populated, it will attempt to attach a location to the request.
 func (r *Request) Enrich() {
+	ip := net.ParseIP(r.Remote)
+	if ip != nil {
+		r.RemoteIP = r.Remote
+	} else {
+		// TODO: Look up IP from hostname
+		// Use "public_suffix_list.dat" to determine TLD
+	}
 
+	if GeoDB != nil && ip != nil {
+		result, err := GeoDB.City(ip)
+		if err == nil {
+			r.City, _ = result.City.Names["en"]
+			r.Country, _ = result.Country.Names["en"]
+			r.Timezone = result.Location.TimeZone
+			r.Location = elastic.GeoPointFromLatLon(result.Location.Latitude, result.Location.Longitude).Source()
+		}
+	}
 }
 
 // Index returns an index based on a base name

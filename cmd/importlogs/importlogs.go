@@ -15,6 +15,7 @@ import (
 
 	"github.com/klauspost/InterviewAssignment/traffic"
 	"github.com/klauspost/pgzip"
+	"github.com/oschwald/geoip2-golang"
 	"github.com/satyrius/gonx"
 )
 
@@ -26,6 +27,7 @@ var (
 	continueError = flag.Bool("e", false, "continnue to next file if an error occurs")
 	elasticHost   = flag.String("elastic", "http://127.0.0.1:9200", "url to elasticseach server (http)")
 	clean         = flag.Bool("clean", false, "clean the index before adding content")
+	geoDB         = flag.String("geodb", "", "MaxMind GeoLite2 or GeoIP2 mmdb database to translate IP to location")
 )
 
 // Local variables
@@ -54,12 +56,18 @@ func main() {
 
 	// Be sure we close the store
 	defer store.Close()
-
+	
+	// Load GeoIP database
+	if *geoDB != "" {
+		traffic.GeoDB, err = geoip2.Open(*geoDB)
+		failOnErr(err)
+	}
 	if *clean {
 		err := store.RemoveAll()
 		failOnErr(err)
 	}
 
+	// Open all input files
 	for _, file := range args {
 		err := importFile(file, store)
 		if err != nil {
@@ -109,9 +117,10 @@ func importFile(file string, store traffic.RequestStore) error {
 	}
 	defer gr.Close()
 
-	reader := gonx.NewReader(gr, *format)
 	n := 0
 	start := time.Now()
+	// Use gonx to split log files
+	reader := gonx.NewReader(gr, *format)
 	for {
 		rec, err := reader.Read()
 		if err == io.EOF {
@@ -123,7 +132,9 @@ func importFile(file string, store traffic.RequestStore) error {
 		if err != nil {
 			return err
 		}
+		// We have an entry. Generate a hash for it, and enrich it.
 		req.GenerateHash()
+		req.Enrich()
 		err = store.Store(*req)
 		if err != nil {
 			return err
