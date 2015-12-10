@@ -1,0 +1,40 @@
+{
+	"ImportPath": "github.com/klauspost/InterviewAssignment",
+	"GoVersion": "go1.5.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/google/gofuzz",
+			"Rev": "e8e0831aa6b604dddd40ce04119e027d1e3ac33a"
+		},
+		{
+			"ImportPath": "github.com/klauspost/compress/flate",
+			"Rev": "42eb574e0fa6e94fa12372456f2bc4c040fdd6fe"
+		},
+		{
+			"ImportPath": "github.com/klauspost/crc32",
+			"Rev": "0aff1ea9c20474c3901672b5b6ead0ac611156de"
+		},
+		{
+			"ImportPath": "github.com/klauspost/pgzip",
+			"Rev": "dbc08c64cfc42677d528f7d17c258cff7e30eb09"
+		},
+		{
+			"ImportPath": "github.com/olivere/elastic/uritemplates",
+			"Comment": "v2.0.23-27-ga8215e0",
+			"Rev": "a8215e0b307af4727033f0cbc52e42600c5baebc"
+		},
+		{
+			"ImportPath": "github.com/satyrius/gonx",
+			"Comment": "v1.2.2-68-g55eaa5d",
+			"Rev": "55eaa5dbf25e115085829035f013e49a5637db71"
+		},
+		{
+			"ImportPath": "gopkg.in/olivere/elastic.v3",
+			"Comment": "v3.0.11",
+			"Rev": "c10e0836b7df4aa7ca1541aafc5c583e1c03d4c3"
+		}
+	]
+}
