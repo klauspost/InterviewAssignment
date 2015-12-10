@@ -1,0 +1,21 @@
+[
+  {
+    "_id": "Main",
+    "_type": "dashboard",
+    "_source": {
+      "title": "Main",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":1,\"id\":\"Request-histogram\",\"panelIndex\":1,\"row\":1,\"size_x\":12,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Status-codes-PIE\",\"panelIndex\":2,\"row\":11,\"size_x\":4,\"size_y\":4,\"type\":\"visualization\"},{\"col\":5,\"id\":\"Response-codes-slash-time\",\"panelIndex\":3,\"row\":11,\"size_x\":7,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Methods\",\"panelIndex\":4,\"row\":15,\"size_x\":3,\"size_y\":4,\"type\":\"visualization\"},{\"col\":4,\"id\":\"Top-10-URIs\",\"panelIndex\":5,\"row\":15,\"size_x\":3,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Top-20-Countries\",\"panelIndex\":6,\"row\":19,\"size_x\":6,\"size_y\":5,\"type\":\"visualization\"},{\"col\":7,\"id\":\"Top-20-Cities\",\"panelIndex\":7,\"row\":15,\"size_x\":6,\"size_y\":5,\"type\":\"visualization\"},{\"col\":6,\"id\":\"Request-histogram-by-country\",\"panelIndex\":8,\"row\":5,\"size_x\":7,\"size_y\":6,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Request-locations\",\"panelIndex\":9,\"row\":5,\"size_x\":5,\"size_y\":6,\"type\":\"visualization\"}]",
+      "optionsJSON": "{\"darkTheme\":false}",
+      "uiStateJSON": "{}",
+      "version": 1,
+      "timeRestore": true,
+      "timeTo": "1995-07-24T13:29:26.689Z",
+      "timeFrom": "1995-07-10T05:26:45.796Z",
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+    }
+  }
+]
