@@ -9,12 +9,18 @@ import (
 
 // Request represents a single server request.
 type Request struct {
-	ID         string    `json:"id,omitempty"`
+	ID         string    `json:"ID,omitempty"`
 	LocalTime  time.Time `json:"time"`         // Server local time of the request
 	Remote     string    `json:"remote"`       // Host or IP of the requester
+	Method     string    `json:"method"`       // Request method used.
 	URI        string    `json:"uri"`          // The requested URI
+	Protocol   string    `json:"protocol"`     // Request protocol used.
 	StatusCode int       `json:"status"`       // The status code returned
 	Payload    int       `json:"payload_size"` // The size of the returned body in bytes
+
+	// Enriched fields:
+	RemoteIP string `json:"remote_ip,omitempty"` // IP of the requester
+
 }
 
 // GenerateHash will generate a unique hash for a request
@@ -39,6 +45,19 @@ func (r *Request) GenerateHash() {
 		panic(err)
 	}
 	r.ID = hex.EncodeToString(hash.Sum(nil))
+}
+
+// Enrich the Request data.
+func (r *Request) Enrich() {
+
+}
+
+// Index returns an index based on a base name
+// combined with the UTC date. This corresponds to
+// a typical Logstash-type index name.
+func (r Request) Index(base string) string {
+	suffix := r.LocalTime.UTC().Format("2006.01.02")
+	return base + "-" + suffix
 }
 
 // RequestStore indicates an interface that can be used

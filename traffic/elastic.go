@@ -2,6 +2,7 @@ package traffic
 
 import (
 	"fmt"
+	"log"
 
 	"gopkg.in/olivere/elastic.v3"
 )
@@ -30,21 +31,12 @@ func NewElastic(host, index string) (RequestStore, error) {
 		return nil, err
 	}
 
-	// Create index, if it does not exist
-	exists, err := e.client.IndexExists(e.index).Do()
+	// Create the template for new indexes
+	err = e.createTemplate()
 	if err != nil {
 		return nil, err
 	}
-	if !exists {
-		// Index does not exist yet.
-		ci, err := e.client.CreateIndex(e.index).Do()
-		if err != nil {
-			return nil, err
-		}
-		if !ci.Acknowledged {
-			return nil, fmt.Errorf("elastic did not acknowledge index creation")
-		}
-	}
+
 	// Start async saver
 	go e.startSaver()
 	return e, nil
@@ -64,52 +56,98 @@ func (e *elasticStore) startSaver() {
 		// Get item of the queue
 		r, ok := <-e.queue
 		if !ok {
-			_, err := bulk.Do()
+			res, err := bulk.Do()
 			e.err.Set(err)
+			if res != nil && res.Errors {
+				e.err.Set(fmt.Errorf("bulk index has error. %d failed, %d succeeded", len(res.Failed()), len(res.Succeeded())))
+			}
 			return
 		}
 		id := r.ID
 		r.ID = ""
-		req := elastic.NewBulkIndexRequest().Index(e.index).Type("request").Id(id).Doc(r)
+		index := r.Index(e.index)
+		req := elastic.NewBulkIndexRequest().Index(index).Type("request").Id(id).Doc(r)
 		bulk.Add(req)
 
 		// If we have collected 500 documents, send the request.
 		if bulk.NumberOfActions() >= 500 {
 			// BulkService.Do() resets the request, so we can reuse it.
-			_, err := bulk.Do()
+			res, err := bulk.Do()
 			if err != nil {
 				e.err.Set(err)
 				return
+			}
+			if res.Errors {
+				e.err.Set(fmt.Errorf("bulk index has error. %d failed, %d succeeded", len(res.Failed()), len(res.Succeeded())))
 			}
 		}
 	}
 }
 
+// createTemplate will create/update a template for new indexes
+// See https://www.elastic.co/guide/en/elasticsearch/guide/current/index-templates.html
+func (e elasticStore) createTemplate() error {
+	t := map[string]interface{}{
+		"template": e.index + "-*",
+		"order":    1,
+		"settings": map[string]interface{}{
+			"number_of_shards": 1,
+		},
+		"mappings": map[string]interface{}{
+/*			"_default_": map[string]interface{}{
+				"_all": map[string]interface{}{
+					"enabled": false,
+				},
+			},*/
+			"request": map[string]interface{}{
+				"properties": map[string]interface{}{
+					"time": map[string]interface{}{
+						"type": "date",
+					},
+					"remote": map[string]interface{}{
+						"type":  "string",
+						"index": "not_analyzed",
+					},
+					"remote_ip": map[string]interface{}{
+						"type": "ip",
+					},
+					"uri": map[string]interface{}{
+						"type":  "string",
+						"index": "not_analyzed",
+					},
+					"method": map[string]interface{}{
+						"type":  "string",
+						"index": "not_analyzed",
+					},
+					"protocol": map[string]interface{}{
+						"type":  "string",
+						"index": "not_analyzed",
+					},
+				},
+			},
+		},
+	}
+	_, err := e.client.IndexPutTemplate(e.index).BodyJson(&t).Do()
+	return err
+}
+
 // RemoveAll all contents of the index.
 func (e *elasticStore) RemoveAll() error {
-	// Create index, if it does not exist
-	exists, err := e.client.IndexExists(e.index).Do()
+	// Get all indexes starting with the index prefix.
+	res, err := e.client.IndexGet(e.index + "-*").AllowNoIndices(true).Do()
 	if err != nil {
 		return err
 	}
-	if exists {
-		// Index does not exist yet.
-		ci, err := e.client.DeleteIndex(e.index).Do()
+
+	for k := range res {
+		log.Println("Deleteting", k)
+		ci, err := e.client.DeleteIndex(k).Do()
 		if err != nil {
 			return err
 		}
 		if !ci.Acknowledged {
 			return fmt.Errorf("elastic did not acknowledge index deletion")
 		}
-	}
-
-	// Index does not exist yet.
-	ci, err := e.client.CreateIndex(e.index).Do()
-	if err != nil {
-		return err
-	}
-	if !ci.Acknowledged {
-		return fmt.Errorf("elastic did not acknowledge index creation")
 	}
 	return nil
 }

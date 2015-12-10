@@ -21,7 +21,7 @@ import (
 // Parameters
 var (
 	// Log format, see https://github.com/satyrius/gonx#format
-	format        = flag.String("format", `$remote_addr - - [$time_local] "$request" $status $size`, "Log format")
+	format        = flag.String("format", `$remote_addr - - [$time_local] "$method $uri $protocol" $status $size`, "Log format")
 	timeFormat    = flag.String("timeformat", `02/Jan/2006:15:04:05 -0700`, "Time format in Go time.Parse format.")
 	continueError = flag.Bool("e", false, "continnue to next file if an error occurs")
 	elasticHost   = flag.String("elastic", "http://127.0.0.1:9200", "url to elasticseach server (http)")
@@ -149,7 +149,9 @@ func parseEntry(rec *gonx.Entry) (*traffic.Request, error) {
 
 	// Individual fields that are missing are ignored.
 	req.Remote, _ = rec.Field("remote_addr")
-	req.URI, _ = rec.Field("request")
+	req.URI, _ = rec.Field("uri")
+	req.Method, _ = rec.Field("method")
+	req.Protocol, _ = rec.Field("protocol")
 
 	f, err := rec.Field("time_local")
 	if err == nil {
