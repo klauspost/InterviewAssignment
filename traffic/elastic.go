@@ -75,6 +75,9 @@ func (e *elasticStore) startSaver() {
 
 		// If channel was closed, store the rest and return
 		if !ok {
+			if bulk.NumberOfActions() == 0 {
+				return
+			}
 			res, err := bulk.Do()
 			e.err.Set(err)
 			if res != nil && res.Errors {
@@ -194,6 +197,11 @@ func (e *elasticStore) RemoveAll() error {
 // Close will flush the remaining stores and
 // return any errors that was encountered.
 func (e *elasticStore) Close() error {
+	select {
+	case <-e.finished:
+		return e.err.Err()
+	default:
+	}
 	close(e.queue)
 	<-e.finished
 	return e.err.Err()
