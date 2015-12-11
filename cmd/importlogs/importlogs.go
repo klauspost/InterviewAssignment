@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/klauspost/InterviewAssignment/traffic"
@@ -52,11 +53,16 @@ func main() {
 	if len(args) == 0 {
 		usage()
 	}
+
 	esEnv := os.Getenv("ELASTICSEARCH_PORT_9200_TCP")
+
 	if esEnv != "" {
+		esEnv = strings.Replace(esEnv, "tcp://", "http://", 1)
 		log.Println("Using ELASTICSEARCH_PORT_9200_TCP environment variable:", esEnv)
 		elasticHost = &esEnv
 	}
+
+	log.Println("Connecting to host:", *elasticHost)
 
 	// Be sure we exit with the right exitcode.
 	defer func() {
