@@ -17,7 +17,7 @@ var GeoDB *geoip2.Reader
 
 // Request represents a single server request.
 type Request struct {
-	ID         string    `json:"ID,omitempty"`
+	ID         string    `json:"_id,omitempty"`
 	ServerTime time.Time `json:"time"`         // Server local time of the request
 	Remote     string    `json:"remote"`       // Host or IP of the requester
 	Method     string    `json:"method"`       // Request method used.

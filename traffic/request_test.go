@@ -126,7 +126,7 @@ func TestEnrichGeoDB(t *testing.T) {
 	}
 }
 
-// Compare that a JSON marshalled version of two requests matches.
+// Compare that a JSON marshalled version of two requests match.
 func compareReqJSON(got, expect Request) error {
 	gotJ, err := json.MarshalIndent(got, "", "  ")
 	if err != nil {
