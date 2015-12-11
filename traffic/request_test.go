@@ -1,11 +1,15 @@
 package traffic
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
 
 	"github.com/google/gofuzz"
+	"github.com/oschwald/geoip2-golang"
 )
 
 // Return a time no later than 5000 years from unix datum.
@@ -48,4 +52,94 @@ func TestGenerateHash(t *testing.T) {
 			t.Fatalf("unexpected hash length, was %d, expected 40", len(a.ID))
 		}
 	}
+}
+
+type reqTest struct {
+	in  Request
+	out Request
+}
+
+var someTime, _ = time.Parse(time.RFC3339, "2012-11-01T22:08:41+00:00")
+
+var reqTestsNoGeo = []reqTest{
+	reqTest{Request{}, Request{}},
+	// Test that valid IP addresses are transferred
+	reqTest{
+		in:  Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "1.2.3.4", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "1.2.3.4", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "1.2.3.4", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+	},
+	// Remote host names should not be transferred.
+	reqTest{
+		in:  Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "peytz.dk", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "peytz.dk", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+	},
+}
+
+func TestEnrichNoGeo(t *testing.T) {
+	GeoDB = nil
+	for i, test := range reqTestsNoGeo {
+		req := test.in
+		req.Enrich()
+
+		err := compareReqJSON(req, test.out)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Logf("Enrich test %d PASSED.", i)
+	}
+}
+
+var reqTestsGeo = []reqTest{
+	reqTest{Request{}, Request{}},
+	// Test that valid IP addresses are transferred
+	reqTest{
+		in:  Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "1.2.3.4", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "1.2.3.4", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "1.2.3.4", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+	},
+	// Remote host names should not be transferred.
+	reqTest{
+		in:  Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "peytz.dk", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "peytz.dk", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+	},
+	// Test an IP that is in the sample database.
+	reqTest{
+		in:  Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "81.2.69.160", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "81.2.69.160", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "81.2.69.160", Country: "United Kingdom", City: "London", Timezone: "Europe/London", Location: map[string]float64{"lat": 51.5142, "lon": -0.0931}, ClientTime: &someTime},
+	},
+}
+
+func TestEnrichGeoDB(t *testing.T) {
+	var err error
+	GeoDB, err = geoip2.Open("testdata/GeoIP2-City-Test.mmdb")
+	if err != nil {
+		t.Skip(err)
+	}
+	for i, test := range reqTestsGeo {
+		req := test.in
+		req.Enrich()
+
+		err := compareReqJSON(req, test.out)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Logf("Enrich test %d PASSED.", i)
+	}
+}
+
+// Compare that a JSON marshalled version of two requests matches.
+func compareReqJSON(got, expect Request) error {
+	gotJ, err := json.MarshalIndent(got, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	expJ, err := json.MarshalIndent(expect, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	if bytes.Compare(gotJ, expJ) != 0 {
+		return fmt.Errorf("requests did not match.\n---Expected:\n%s\n---Got:\n%s", expJ, gotJ)
+	}
+	return nil
 }
