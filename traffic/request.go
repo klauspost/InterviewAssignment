@@ -11,7 +11,8 @@ import (
 	"gopkg.in/olivere/elastic.v3"
 )
 
-// Initialize to look up geolocation for raw IP addresses
+// GeoDB should be initialized to look up geolocation for raw IP addresses
+// when enriching data.
 var GeoDB *geoip2.Reader
 
 // Request represents a single server request.
@@ -27,11 +28,11 @@ type Request struct {
 
 	// Enriched fields:
 	RemoteIP   string             `json:"remote_ip,omitempty"` // IP of the requester
-	Country    string             `json:"country,omitempty"`
-	City       string             `json:"city,omitempty"`
-	Timezone   string             `json:"timezone,omitempty"`
-	Location   map[string]float64 `json:"location,omitempty"`
-	ClientTime *time.Time         `json:"client_time"`
+	Country    string             `json:"country,omitempty"`   // Country of the requester
+	City       string             `json:"city,omitempty"`      // City of the requester
+	Timezone   string             `json:"timezone,omitempty"`  // Timezone of the requester
+	Location   map[string]float64 `json:"location,omitempty"`  // GeoIP location.
+	ClientTime *time.Time         `json:"client_time"`         // Time converted to the client timezone
 }
 
 // GenerateHash will generate a unique hash for a request
@@ -59,6 +60,10 @@ func (r *Request) GenerateHash() {
 }
 
 // Enrich the Request data.
+//
+// This will attempt to derive as much information about the request
+// as possible.
+//
 // If GeoDB has been populated, it will attempt to attach a location to the request.
 func (r *Request) Enrich() {
 	ip := net.ParseIP(r.Remote)
@@ -69,6 +74,7 @@ func (r *Request) Enrich() {
 		// Use "public_suffix_list.dat" to determine TLD
 	}
 
+	// If we have a GeoDB and an IP address, try to fill in information.
 	if GeoDB != nil && ip != nil {
 		result, err := GeoDB.City(ip)
 		if err == nil {
@@ -96,7 +102,18 @@ func (r Request) Index(base string) string {
 // RequestStore indicates an interface that can be used
 // to store requests.
 type RequestStore interface {
+	// Store a request in the backend.
+	// Errors may be lazily reported depending
+	// on the implementation
 	Store(Request) error
+
+	// RemoveAll must remove all previous data from the store.
+	// The function must not return before the operation has been completed.
+	// If an error is encountered some indexes may still remain.
 	RemoveAll() error
+
+	// Close the RequestStore.
+	// If nil is returned the implementation must have saved all
+	// requests when the function returns.
 	Close() error
 }

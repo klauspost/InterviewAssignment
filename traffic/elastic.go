@@ -7,6 +7,8 @@ import (
 	"gopkg.in/olivere/elastic.v3"
 )
 
+// elasticStore is an internal representation of
+// a RequestStore.
 type elasticStore struct {
 	client *elastic.Client
 	index  string
@@ -19,6 +21,14 @@ type elasticStore struct {
 
 // NewElastic will return a RequestStore, that will
 // send all requests to an elastic backend.
+//
+// Requests are stored in bulk requests, so errors will be
+// reported at a later point. That means that a request may not be
+// stored even if the Store call did not return an error,
+// and that any error returned are likely from a previous store.
+//
+// If an error has been encountered, the storer will not recover.
+// If Close returns successfully all requests are stored successfully.
 func NewElastic(host, index string) (RequestStore, error) {
 	e := &elasticStore{index: index, err: &syncErr{}}
 	e.queue = make(chan *Request, 1000)
@@ -43,6 +53,11 @@ func NewElastic(host, index string) (RequestStore, error) {
 }
 
 // Store a request in elastic
+//
+// Requests are stored in bulk requests, so errors will be
+// reported at a later point. That means that a request may not be
+// stored even if nil is returned, and that any error returned are
+// likely from a previous store.
 func (e *elasticStore) Store(r Request) error {
 	e.queue <- &r
 	return e.err.Err()
@@ -50,11 +65,15 @@ func (e *elasticStore) Store(r Request) error {
 
 // startSaver will start an async saver
 func (e *elasticStore) startSaver() {
+	// When this function returns, always close the finished channel
 	defer close(e.finished)
+
 	bulk := elastic.NewBulkService(e.client)
 	for {
 		// Get item of the queue
 		r, ok := <-e.queue
+
+		// If channel was closed, store the rest and return
 		if !ok {
 			res, err := bulk.Do()
 			e.err.Set(err)
@@ -63,9 +82,14 @@ func (e *elasticStore) startSaver() {
 			}
 			return
 		}
+		// Remove ID, ES has that as a separate field
 		id := r.ID
 		r.ID = ""
+
+		// Get destination index based on the Request
 		index := r.Index(e.index)
+
+		// Create the request and add it to the bulk saver
 		req := elastic.NewBulkIndexRequest().Index(index).Type("request").Id(id).Doc(r)
 		bulk.Add(req)
 
@@ -78,7 +102,7 @@ func (e *elasticStore) startSaver() {
 				return
 			}
 			if res.Errors {
-				e.err.Set(fmt.Errorf("bulk index has error. %d failed, %d succeeded", len(res.Failed()), len(res.Succeeded())))
+				e.err.Set(fmt.Errorf("bulk index returned error(s). %d failed, %d succeeded", len(res.Failed()), len(res.Succeeded())))
 			}
 		}
 	}
@@ -145,7 +169,7 @@ func (e elasticStore) createTemplate() error {
 	return err
 }
 
-// RemoveAll all contents of the index.
+// RemoveAll will remove all contents of the indexes.
 func (e *elasticStore) RemoveAll() error {
 	// Get all indexes starting with the index prefix.
 	res, err := e.client.IndexGet(e.index + "-*").AllowNoIndices(true).Do()
@@ -153,8 +177,9 @@ func (e *elasticStore) RemoveAll() error {
 		return err
 	}
 
+	// Delete all indexes.
 	for k := range res {
-		log.Println("Deleteting", k)
+		log.Println("Deleting", k)
 		ci, err := e.client.DeleteIndex(k).Do()
 		if err != nil {
 			return err
@@ -166,9 +191,10 @@ func (e *elasticStore) RemoveAll() error {
 	return nil
 }
 
-// RemoveAll all contents of the index.
+// Close will flush the remaining stores and
+// return any errors that was encountered.
 func (e *elasticStore) Close() error {
 	close(e.queue)
 	<-e.finished
-	return nil
+	return e.err.Err()
 }
