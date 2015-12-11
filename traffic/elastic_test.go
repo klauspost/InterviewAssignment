@@ -23,7 +23,9 @@ var storeTests = []Request{
 	Request{},
 }
 
-// Add all requests to the store
+// Add all requests to the store.
+// The test will fail if any error is encountered.
+// The RequestStore is closed before returning.
 func addRequests(t *testing.T, s RequestStore, r []Request) {
 	for i, req := range r {
 		req.GenerateHash()
@@ -99,5 +101,23 @@ func TestElastic(t *testing.T) {
 		}
 		t.Logf("Elastic delete #%d PASSED", i)
 	}
+	err = store.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
 
+	// Test closing without adding contents
+	store, err = NewElastic(*elasticHost, testIndex)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = store.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Test we can call close multiple times.
+	err = store.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
 }
