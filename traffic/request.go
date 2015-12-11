@@ -81,11 +81,16 @@ func (r *Request) Enrich() {
 			r.City, _ = result.City.Names["en"]
 			r.Country, _ = result.Country.Names["en"]
 			r.Timezone = result.Location.TimeZone
-			r.Location = elastic.GeoPointFromLatLon(result.Location.Latitude, result.Location.Longitude).Source()
-			goloc, err := time.LoadLocation(r.Timezone)
-			if err == nil {
-				t := r.ServerTime.In(goloc)
-				r.ClientTime = &t
+
+			// We use the timezone to get an indication if we have any idea
+			// about where we are.
+			if r.Timezone != "" {
+				r.Location = elastic.GeoPointFromLatLon(result.Location.Latitude, result.Location.Longitude).Source()
+				goloc, err := time.LoadLocation(r.Timezone)
+				if err == nil {
+					t := r.ServerTime.In(goloc)
+					r.ClientTime = &t
+				}
 			}
 		}
 	}
