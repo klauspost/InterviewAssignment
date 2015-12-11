@@ -56,7 +56,7 @@ func main() {
 
 	// Be sure we close the store
 	defer store.Close()
-	
+
 	// Load GeoIP database
 	if *geoDB != "" {
 		traffic.GeoDB, err = geoip2.Open(*geoDB)
@@ -170,7 +170,7 @@ func parseEntry(rec *gonx.Entry) (*traffic.Request, error) {
 		if err != nil {
 			return nil, err
 		}
-		req.LocalTime = t
+		req.ServerTime = t
 	}
 
 	f, err = rec.Field("status")

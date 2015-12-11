@@ -17,7 +17,7 @@ var GeoDB *geoip2.Reader
 // Request represents a single server request.
 type Request struct {
 	ID         string    `json:"ID,omitempty"`
-	LocalTime  time.Time `json:"time"`         // Server local time of the request
+	ServerTime time.Time `json:"time"`         // Server local time of the request
 	Remote     string    `json:"remote"`       // Host or IP of the requester
 	Method     string    `json:"method"`       // Request method used.
 	URI        string    `json:"uri"`          // The requested URI
@@ -26,11 +26,12 @@ type Request struct {
 	Payload    int       `json:"payload_size"` // The size of the returned body in bytes
 
 	// Enriched fields:
-	RemoteIP string             `json:"remote_ip,omitempty"` // IP of the requester
-	Country  string             `json:"country,omitempty"`
-	City     string             `json:"city,omitempty"`
-	Timezone string             `json:"timezone,omitempty"`
-	Location map[string]float64 `json:"location,omitempty"`
+	RemoteIP   string             `json:"remote_ip,omitempty"` // IP of the requester
+	Country    string             `json:"country,omitempty"`
+	City       string             `json:"city,omitempty"`
+	Timezone   string             `json:"timezone,omitempty"`
+	Location   map[string]float64 `json:"location,omitempty"`
+	ClientTime *time.Time         `json:"client_time"`
 }
 
 // GenerateHash will generate a unique hash for a request
@@ -75,6 +76,11 @@ func (r *Request) Enrich() {
 			r.Country, _ = result.Country.Names["en"]
 			r.Timezone = result.Location.TimeZone
 			r.Location = elastic.GeoPointFromLatLon(result.Location.Latitude, result.Location.Longitude).Source()
+			goloc, err := time.LoadLocation(r.Timezone)
+			if err == nil {
+				t := r.ServerTime.In(goloc)
+				r.ClientTime = &t
+			}
 		}
 	}
 }
@@ -83,7 +89,7 @@ func (r *Request) Enrich() {
 // combined with the UTC date. This corresponds to
 // a typical Logstash-type index name.
 func (r Request) Index(base string) string {
-	suffix := r.LocalTime.UTC().Format("2006.01.02")
+	suffix := r.ServerTime.UTC().Format("2006.01.02")
 	return base + "-" + suffix
 }
 
