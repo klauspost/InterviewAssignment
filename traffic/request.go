@@ -27,12 +27,12 @@ type Request struct {
 	Payload    int       `json:"payload_size"` // The size of the returned body in bytes
 
 	// Enriched fields:
-	RemoteIP   string             `json:"remote_ip,omitempty"` // IP of the requester
-	Country    string             `json:"country,omitempty"`   // Country of the requester
-	City       string             `json:"city,omitempty"`      // City of the requester
-	Timezone   string             `json:"timezone,omitempty"`  // Timezone of the requester
-	Location   map[string]float64 `json:"location,omitempty"`  // GeoIP location.
-	ClientTime *time.Time         `json:"client_time"`         // Time converted to the client timezone
+	RemoteIP   string             `json:"remote_ip,omitempty"`   // IP of the requester
+	Country    string             `json:"country,omitempty"`     // Country of the requester
+	City       string             `json:"city,omitempty"`        // City of the requester
+	Timezone   string             `json:"timezone,omitempty"`    // Timezone of the requester
+	Location   map[string]float64 `json:"location,omitempty"`    // GeoIP location.
+	ClientTime *time.Time         `json:"client_time,omitempty"` // Time converted to the client timezone
 }
 
 // GenerateHash will generate a unique hash for a request
