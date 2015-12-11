@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strconv"
 	"time"
@@ -50,6 +51,11 @@ func main() {
 	args := flag.Args()
 	if len(args) == 0 {
 		usage()
+	}
+	esEnv := os.Getenv("ELASTICSEARCH_PORT_9200_TCP")
+	if esEnv != "" {
+		log.Println("Using ELASTICSEARCH_PORT_9200_TCP environment variable:", esEnv)
+		elasticHost = &esEnv
 	}
 
 	// Be sure we exit with the right exitcode.
