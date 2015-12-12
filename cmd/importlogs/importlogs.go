@@ -26,7 +26,7 @@ import (
 var (
 	format        = flag.String("format", `$remote_addr - - [$time_local] "$method $uri $protocol" $status $size`, "Log format")
 	timeFormat    = flag.String("timeformat", `02/Jan/2006:15:04:05 -0700`, "Time format in Go time.Parse format.")
-	continueError = flag.Bool("e", false, "continnue to next file if an error occurs")
+	continueError = flag.Bool("e", false, "continue to next file if an error occurs")
 	elasticHost   = flag.String("elastic", "http://127.0.0.1:9200", "url to elasticseach server (http)")
 	clean         = flag.Bool("clean", false, "clean the index before adding content")
 	geoDB         = flag.String("geodb", "", "MaxMind GeoLite2 or GeoIP2 mmdb database to translate IP to location")

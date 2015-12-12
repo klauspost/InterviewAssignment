@@ -8,17 +8,22 @@ importlogs will import apache/nginx style logs into an elasticsearch database.
 
   -clean
         clean the index before adding content
+        
   -e
-        continnue to next file if an error occurs
+        continue to next file if an error occurs
+        
   -elastic string
         url to elasticseach server (http) (default "http://127.0.0.1:9200")
         Overriden if environment variable "ELASTICSEARCH_PORT_9200_TCP" is set.
+        
   -format string
         Log format (default "$remote_addr - - [$time_local] \"$method $uri $protocol\" $status $size")
+        
   -geodb string
-        MaxMind GeoLite2 or GeoIP2 mmdb database to translate IP to location
+        Path to MaxMind GeoLite2 or GeoIP2 mmdb database to translate IP to location.
+        
   -timeformat string
-        Time format in Go time.Parse format. (default "02/Jan/2006:15:04:05 -0700")
+        Time format in Go time.Parse format. (default "02/Jan/2006:15:04:05 -0700").
         See https://golang.org/pkg/time/#Parse for more information on the format.
 
 Specifying custom log formatting
