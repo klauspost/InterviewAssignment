@@ -27,6 +27,7 @@ type Request struct {
 	Payload    int       `json:"payload_size"` // The size of the returned body in bytes
 
 	// Enriched fields:
+	HourOfDay  int                `json:"hour_of_day,omitempty"` // Hour of day of server time (in UTC).
 	RemoteIP   string             `json:"remote_ip,omitempty"`   // IP of the requester
 	Country    string             `json:"country,omitempty"`     // Country of the requester
 	City       string             `json:"city,omitempty"`        // City of the requester
@@ -66,6 +67,10 @@ func (r *Request) GenerateHash() {
 //
 // If GeoDB has been populated, it will attempt to attach a location to the request.
 func (r *Request) Enrich() {
+	// We convert to UTC, if server time should be different,
+	// and to avoid overlaps because of DST.
+	r.HourOfDay = r.ServerTime.UTC().Hour()
+
 	ip := net.ParseIP(r.Remote)
 	if ip != nil {
 		r.RemoteIP = r.Remote

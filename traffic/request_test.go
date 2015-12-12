@@ -66,12 +66,12 @@ var reqTestsNoGeo = []reqTest{
 	// Test that valid IP addresses are transferred
 	reqTest{
 		in:  Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "1.2.3.4", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
-		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "1.2.3.4", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "1.2.3.4", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "1.2.3.4", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "1.2.3.4", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil, HourOfDay: 22},
 	},
 	// Remote host names should not be transferred.
 	reqTest{
 		in:  Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "peytz.dk", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
-		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "peytz.dk", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "peytz.dk", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil, HourOfDay: 22},
 	},
 }
 
@@ -94,17 +94,17 @@ var reqTestsGeo = []reqTest{
 	// Test that valid IP addresses are transferred
 	reqTest{
 		in:  Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "1.2.3.4", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
-		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "1.2.3.4", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "1.2.3.4", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "1.2.3.4", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "1.2.3.4", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil, HourOfDay: 22},
 	},
 	// Remote host names should not be transferred.
 	reqTest{
 		in:  Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "peytz.dk", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
-		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "peytz.dk", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
+		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "peytz.dk", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil, HourOfDay: 22},
 	},
 	// Test an IP that is in the sample database.
 	reqTest{
 		in:  Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "81.2.69.160", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "", Country: "", City: "", Timezone: "", Location: map[string]float64(nil), ClientTime: nil},
-		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "81.2.69.160", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "81.2.69.160", Country: "United Kingdom", City: "London", Timezone: "Europe/London", Location: map[string]float64{"lat": 51.5142, "lon": -0.0931}, ClientTime: &someTime},
+		out: Request{ID: "ABCdefgf", ServerTime: someTime, Remote: "81.2.69.160", Method: "GET", URI: "/", Protocol: "HTTP/1.0", StatusCode: 0, Payload: 0, RemoteIP: "81.2.69.160", Country: "United Kingdom", City: "London", Timezone: "Europe/London", Location: map[string]float64{"lat": 51.5142, "lon": -0.0931}, ClientTime: &someTime, HourOfDay: 22},
 	},
 }
 
