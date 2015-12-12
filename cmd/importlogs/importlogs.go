@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -29,12 +30,14 @@ var (
 	continueError = flag.Bool("e", false, "continue to next file if an error occurs")
 	elasticHost   = flag.String("elastic", "http://127.0.0.1:9200", "url to elasticseach server (http)")
 	clean         = flag.Bool("clean", false, "clean the index before adding content")
+	test          = flag.Bool("test", false, "write json representation of requests to stdout")
 	geoDB         = flag.String("geodb", "", "MaxMind GeoLite2 or GeoIP2 mmdb database to translate IP to location")
 )
 
 // Local variables.
 var (
-	exitCode = 0 // Exitcode. Used if 'continueError' is set.
+	exitCode = 0                    // Exitcode. Used if 'continueError' is set.
+	logOut   = io.Writer(os.Stdout) // Write progress to this writer.
 )
 
 // Print usage help and exit with exit code 2
@@ -54,24 +57,42 @@ func main() {
 		usage()
 	}
 
-	esEnv := os.Getenv("ELASTICSEARCH_PORT_9200_TCP")
-
-	if esEnv != "" {
-		esEnv = strings.Replace(esEnv, "tcp://", "http://", 1)
-		log.Println("Using ELASTICSEARCH_PORT_9200_TCP environment variable:", esEnv)
-		elasticHost = &esEnv
+	// If testing, redirect logging
+	if *test {
+		logOut = ioutil.Discard
+		log.SetOutput(os.Stderr)
 	}
 
-	log.Println("Connecting to host:", *elasticHost)
+	if !*test {
+		esEnv := os.Getenv("ELASTICSEARCH_PORT_9200_TCP")
+		if esEnv != "" {
+			esEnv = strings.Replace(esEnv, "tcp://", "http://", 1)
+			log.Println("Using ELASTICSEARCH_PORT_9200_TCP environment variable:", esEnv)
+			elasticHost = &esEnv
+		}
+
+		time.Sleep(time.Second)
+		log.Println("Connecting to host:", *elasticHost)
+	}
 
 	// Be sure we exit with the right exitcode.
 	defer func() {
 		os.Exit(exitCode)
 	}()
 
-	// Create an elasticsearch storer.
-	store, err := traffic.NewElastic(*elasticHost, "requests")
-	failOnErr(err)
+	// If we are testing, use a JsonStore to stdout.
+	var store traffic.RequestStore
+	var err error
+	if *test {
+		w := bufio.NewWriter(os.Stdout)
+		defer w.Flush()
+		store, err = traffic.NewJSONStore(w)
+		failOnErr(err)
+	} else {
+		// Create an elasticsearch storer.
+		store, err = traffic.NewElastic(*elasticHost, "requests")
+		failOnErr(err)
+	}
 
 	// Be sure we close the store and return the proper exitcode
 	defer func() {
@@ -175,13 +196,13 @@ func importFile(file string, store traffic.RequestStore) error {
 		n++
 		if n%1000 == 0 {
 			elapsed := time.Since(start)
-			fmt.Printf("Processed %d, %0.2f entries/sec.\n", n, float64(n)/elapsed.Seconds())
+			fmt.Fprintf(logOut, "Processed %d, %0.2f entries/sec.\n", n, float64(n)/elapsed.Seconds())
 		}
 	}
 	// Print overall metrics
 	elapsed := time.Since(start)
-	fmt.Printf("Processing %q took %s, processing %d entries.\n", file, elapsed, n)
-	fmt.Printf("%0.2f entries/sec.", float64(n)/elapsed.Seconds())
+	fmt.Fprintf(logOut, "Processing %q took %s, processing %d entries.\n", file, elapsed, n)
+	fmt.Fprintf(logOut, "%0.2f entries/sec.", float64(n)/elapsed.Seconds())
 	return nil
 }
 
