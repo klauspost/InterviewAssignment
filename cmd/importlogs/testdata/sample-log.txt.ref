@@ -1,0 +1,168 @@
+[
+  {
+    "_id": "7576de19e5ae686bec61ff6c3b97d493f484ca80",
+    "time": "1995-07-28T13:26:37-04:00",
+    "remote": "piweba4y.prodigy.com",
+    "method": "GET",
+    "uri": "/shuttle/countdown/count70.gif",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 46573,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "a18a2b0461c44d8e23d6c4c42768f24d4794976e",
+    "time": "1995-07-28T13:26:42-04:00",
+    "remote": "ntigate.nt.com",
+    "method": "GET",
+    "uri": "/images/launchmedium.gif",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 11853,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "c7c6df94d8f88747ca5fc7c1ba748655767685bf",
+    "time": "1995-07-28T13:26:45-04:00",
+    "remote": "eng-055.afit.af.mil",
+    "method": "GET",
+    "uri": "/statistics/images/statsm.gif",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 4413,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "f7329a6b45256a393549dda2bad1b9d898e6d670",
+    "time": "1995-07-28T13:26:45-04:00",
+    "remote": "eng-055.afit.af.mil",
+    "method": "GET",
+    "uri": "/icon/new01.gif",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 1016,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "3091554bc0ab2c2e33bc5de42bdde000012c796a",
+    "time": "1995-07-28T13:26:39-04:00",
+    "remote": "tiger2.ocs.lsu.edu",
+    "method": "GET",
+    "uri": "/history/skylab/skylab-logo.gif",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 3274,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "cc70e342478675a631b00b72a75d44f89a4efe6b",
+    "time": "1995-07-28T13:26:41-04:00",
+    "remote": "piweba4y.prodigy.com",
+    "method": "GET",
+    "uri": "/images/NASA-logosmall.gif",
+    "protocol": "HTTP/1.0",
+    "status": 304,
+    "payload_size": 0,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "ffdb403f98ba9fbf01683823ed6e62cf901d94b4",
+    "time": "1995-07-28T13:26:41-04:00",
+    "remote": "ntigate.nt.com",
+    "method": "GET",
+    "uri": "/shuttle/missions/missions.html",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 8677,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "049a7b2b86f5718731b2ebc1fad779628247da3c",
+    "time": "1995-07-28T13:26:47-04:00",
+    "remote": "lamar.d48.lilly.com",
+    "method": "GET",
+    "uri": "/",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 7280,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "9b2bf4ba37c123b85be191f4828df2a628b20472",
+    "time": "1995-07-28T13:26:44-04:00",
+    "remote": "eng-055.afit.af.mil",
+    "method": "GET",
+    "uri": "/statistics/statistics.html",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 2813,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "4339da9df1df7ba565ebfbc472aaffb9b6075061",
+    "time": "1995-07-28T13:26:45-04:00",
+    "remote": "eng-055.afit.af.mil",
+    "method": "GET",
+    "uri": "/statistics/images/getstats_big.gif",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 6777,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "8ad5c2b87e97cf4919029887b4ac83b2e149b4cf",
+    "time": "1995-07-28T13:26:42-04:00",
+    "remote": "193.81.242.40",
+    "method": "GET",
+    "uri": "/shuttle/technology/sts-newsref/sts_asm.html",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 71654,
+    "hour_of_day": 17,
+    "remote_ip": "193.81.242.40"
+  },
+  {
+    "_id": "aef65bd8fe069113abf0c5fcb2df2177e72961e4",
+    "time": "1995-07-28T13:26:43-04:00",
+    "remote": "piweba4y.prodigy.com",
+    "method": "GET",
+    "uri": "/images/KSC-logosmall.gif",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 1204,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "8340a3daf2eb2fda4b889600826d79d6dbb92b7a",
+    "time": "1995-07-28T13:26:43-04:00",
+    "remote": "ntigate.nt.com",
+    "method": "GET",
+    "uri": "/images/NASA-logosmall.gif",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 786,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "05ba16e3c60fe5e1e8ccdcacfe1a5c717a19a94b",
+    "time": "1995-07-28T13:26:49-04:00",
+    "remote": "lamar.d48.lilly.com",
+    "method": "GET",
+    "uri": "/images/ksclogo-medium.gif",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 5866,
+    "hour_of_day": 17
+  },
+  {
+    "_id": "733e56d490dd5131deca463e2a458d293ea9ec1f",
+    "time": "1995-07-28T13:26:49-04:00",
+    "remote": "tornado.umd.edu",
+    "method": "GET",
+    "uri": "/shuttle/countdown/video/livevideo2.gif",
+    "protocol": "HTTP/1.0",
+    "status": 200,
+    "payload_size": 49152,
+    "hour_of_day": 17
+  }
+]
