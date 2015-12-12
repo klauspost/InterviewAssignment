@@ -27,7 +27,7 @@ type Request struct {
 	Payload    int       `json:"payload_size"` // The size of the returned body in bytes
 
 	// Enriched fields:
-	HourOfDay  int                `json:"hour_of_day,omitempty"` // Hour of day of server time (in UTC).
+	HourOfDay  int                `json:"hour_of_day"`           // Hour of day of server time (in UTC).
 	RemoteIP   string             `json:"remote_ip,omitempty"`   // IP of the requester
 	Country    string             `json:"country,omitempty"`     // Country of the requester
 	City       string             `json:"city,omitempty"`        // City of the requester
