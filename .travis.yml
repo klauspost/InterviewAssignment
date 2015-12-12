@@ -13,9 +13,15 @@ go:
   - 1.5
   - tip
 
+services:
+  - elasticsearch
+
 install:
  - go get -u github.com/golang/lint/golint
  - go get -u golang.org/x/tools/cmd/goimports
+
+before_script:
+  - sleep 10
 
 script:
  - go vet ./cmd/...
