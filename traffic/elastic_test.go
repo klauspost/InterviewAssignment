@@ -41,7 +41,6 @@ func addRequests(t *testing.T, s RequestStore, r []Request) {
 }
 
 func TestElastic(t *testing.T) {
-	flag.Parse()
 	testIndex := "es-test-index"
 	store, err := NewElastic(*elasticHost, testIndex)
 	if err != nil {
