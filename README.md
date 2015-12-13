@@ -52,17 +52,18 @@ You can specify a custom log parsing format. The default parse format is matchin
 For more information on the format, see https://github.com/satyrius/gonx#format
 
 The following fields are recognized and extracted:
-    * `remote_addr`: Remote address of the requestor. This can be either a hostname, or an IP address.
-	* `uri`: The requested URI without hostname.
-	* `method`: The request method. `GET`, `PUT`, etc.
-	* `protocol`: The request protocol. `HTTP/1.1`, etc.
-	* `time_local`:  The local server time. The time must be parseable with the `-timeformat`.
-	* `status`: The server status reply code.
-	* `size`: Size of the reply in bytes. Can be '-' on bodyless replies.
+
+ * `remote_addr`: Remote address of the requestor. This can be either a hostname, or an IP address.
+ * `uri`: The requested URI without hostname.
+ * `method`: The request method. `GET`, `PUT`, etc.
+ * `protocol`: The request protocol. `HTTP/1.1`, etc.
+ * `time_local`:  The local server time. The time must be parseable with the `-timeformat`.
+ * `status`: The server status reply code.
+ * `size`: Size of the reply in bytes. Can be '-' on bodyless replies.
 
 ## elasticsearch model
 
-Data is stored in `request-yyyy.mm.dd` indexes, with one index per day, similar to Logstash/Heka and similar tools.
+Data is stored in `requests-yyyy.mm.dd` indexes, with one index per day, similar to Logstash/Heka and similar tools.
 
 When possible, the data is enriched with geolocation, country, local time.
 
@@ -155,7 +156,7 @@ For a limited data set, that is a viable strategy, but for a scalable system tha
  * Feature: Look up IP addresses for hosts. Probably requires caching. 
  * Feature: Add more storage backends.
  * Deployment: Docker image shouldn't include build environment.
- * Model: JSON representation should probably be `["id" = {...}, ....]` to make order indedependent lookups easier. 
+ * Model: JSON representation should probably be `{"id" = {...}, ....}` to make order indedependent lookups easier. 
 
 ## facts
 
