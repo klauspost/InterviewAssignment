@@ -5,7 +5,7 @@ Log parser for apache/nginx style logs.
 
 This package will import logs to Elasticsearch to enable data visualization.
 
-See an [example visualization](http://tinyurl.com/pduvdxl).
+See an [example visualization](http://tinyurl.com/pc48vun).
 
 # installation
 This package uses [Go 1.5's vendor experiment](https://medium.com/@freeformz/go-1-5-s-vendor-experiment-fd3e830f52c3#.kl6i4y54k). 
@@ -160,7 +160,7 @@ For a limited data set, that is a viable strategy, but for a scalable system tha
 
 ## facts
 
-* Hours used: 24 hours, including documentation, sample deployment, excluding postmortem.
+* Time used: 24 hours, including documentation, sample deployment, excluding postmortem.
 * 2 packages (1 model, 1 executable), 9 vendored packages.
 * Vendoring: GO15VENDOREXPERIMENT.
 * Deployment: Docker.
