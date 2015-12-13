@@ -157,6 +157,7 @@ For a limited data set, that is a viable strategy, but for a scalable system tha
  * Feature: Add more storage backends.
  * Deployment: Docker image shouldn't include build environment.
  * Model: JSON representation should probably be `{"id" = {...}, ....}` to make order indedependent lookups easier. 
+ * Testing: Fix Elasticsearch on Travis CI. Maybe it requires sudo?
 
 ## facts
 
